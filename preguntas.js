@@ -50,7 +50,7 @@ const PREGUNTAS = [
     correcta: 2,
   },
   {
-    pregunta: "¿El animal que más tiempo de gestión tiene es?",
+    pregunta: "¿El animal que más tiempo de gestación tiene es?",
     opciones: ["La ballena", "El elefante", "La jirafa", "El caballo"],
     correcta: 1,
   },
