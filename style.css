@@ -626,7 +626,7 @@ body::after {
   overflow: hidden;
 }
 .revelacion-card::before {
-  content: "🩵";
+  content: "💙";
   position: absolute;
   font-size: 120px;
   opacity: 0.06;
@@ -635,7 +635,7 @@ body::after {
   pointer-events: none;
 }
 .revelacion-card::after {
-  content: "🩵";
+  content: "💙";
   position: absolute;
   font-size: 120px;
   opacity: 0.06;
