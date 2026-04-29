@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/resultado",  "destination": "/api/resultado"  },
+    { "source": "/api/resultados", "destination": "/api/resultados" },
+    { "source": "/api/stats",      "destination": "/api/stats"      }
+  ]
+}

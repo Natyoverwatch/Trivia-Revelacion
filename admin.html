@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resultados – Revelación Bebé 👶</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #f9a8d4 0%, #c084fc 40%, #93c5fd 100%);
+        min-height: 100vh;
+        padding: 24px 16px;
+      }
+
+      .container { max-width: 860px; margin: 0 auto; }
+
+      h1 {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 6px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
+      .subtitulo {
+        color: rgba(255,255,255,0.85);
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 0.95rem;
+      }
+
+      /* ── STATS CARDS ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 18px;
+        padding: 20px 16px;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      }
+      .stat-card .num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #db2777, #9333ea, #2563eb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .stat-card .label {
+        font-size: 0.75rem;
+        color: #999;
+        font-weight: 700;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* ── TABLA ── */
+      .tabla-wrap {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        overflow: hidden;
+      }
+      .tabla-header {
+        padding: 20px 24px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1.5px solid #f3f4f6;
+      }
+      .tabla-header h2 { font-size: 1.1rem; color: #1e1b4b; font-weight: 800; }
+      .btn-refresh {
+        background: linear-gradient(135deg, #9333ea, #2563eb);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn-refresh:hover { opacity: 0.85; }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      thead th {
+        background: #f9fafb;
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.15s; }
+      tbody tr:last-child { border-bottom: none; }
+      tbody tr:hover { background: #faf5ff; }
+      td { padding: 13px 16px; color: #374151; }
+
+      .td-nombre { font-weight: 700; color: #1e1b4b; }
+      .td-prediccion {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .pred-nino { background: #dbeafe; color: #1d4ed8; }
+      .pred-nina { background: #fce7f3; color: #be185d; }
+      .pred-otro { background: #f3f4f6; color: #6b7280; }
+
+      .td-puntaje { font-weight: 800; color: #7c3aed; font-size: 1rem; }
+
+      .barra-mini {
+        width: 80px;
+        height: 8px;
+        background: #f3f4f6;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 6px;
+      }
+      .barra-mini-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f472b6, #a855f7);
+        border-radius: 4px;
+      }
+
+      .td-fecha { color: #9ca3af; font-size: 0.82rem; }
+      .medalla { font-size: 1.1rem; }
+
+      /* ── VACÍO / CARGANDO ── */
+      .estado {
+        text-align: center;
+        padding: 48px 24px;
+        color: #9ca3af;
+        font-size: 0.95rem;
+      }
+      .estado .icono { font-size: 40px; margin-bottom: 12px; }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 540px) {
+        .col-fecha, .col-stats { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🩵 Panel de Resultados 🩷</h1>
+      <p class="subtitulo">Revelación Bebé de Francisco & Erika</p>
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="num" id="s-total">–</div><div class="label">Participantes</div></div>
+        <div class="stat-card"><div class="num" id="s-promedio">–</div><div class="label">Puntaje Promedio</div></div>
+        <div class="stat-card"><div class="num" id="s-nino">–</div><div class="label">Votos Niño 🩵</div></div>
+        <div class="stat-card"><div class="num" id="s-nina">–</div><div class="label">Votos Niña 🩷</div></div>
+      </div>
+
+      <div class="tabla-wrap">
+        <div class="tabla-header">
+          <h2>🏆 Ranking de jugadores</h2>
+          <button class="btn-refresh" onclick="cargarDatos()">↻ Actualizar</button>
+        </div>
+        <div id="tabla-contenido">
+          <div class="estado"><div class="icono">⏳</div>Cargando resultados...</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function clasificarPrediccion(pred) {
+        const p = (pred || '').toLowerCase().trim();
+        if (p.includes('niño') || p === 'nino' || p === 'n' || p === 'hombre' || p === 'masculino') return 'nino';
+        if (p.includes('niña') || p === 'nina' || p === 'f' || p === 'mujer' || p === 'femenino') return 'nina';
+        return 'otro';
+      }
+
+      function formatearFecha(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function medalla(pos) {
+        return pos === 0 ? '🥇' : pos === 1 ? '🥈' : pos === 2 ? '🥉' : `${pos + 1}.`;
+      }
+
+      async function cargarDatos() {
+        document.getElementById('tabla-contenido').innerHTML =
+          '<div class="estado"><div class="icono">⏳</div>Cargando...</div>';
+
+        try {
+          const [resResultados, resStats] = await Promise.all([
+            fetch('/api/resultados'),
+            fetch('/api/stats'),
+          ]);
+          const resultados = await resResultados.json();
+          const stats      = await resStats.json();
+
+          // ── Stats cards ──
+          document.getElementById('s-total').textContent    = stats.total ?? 0;
+          document.getElementById('s-promedio').textContent = stats.total ? `${stats.promedio} pts` : '–';
+          document.getElementById('s-nino').textContent     = stats.predicciones?.nino ?? 0;
+          document.getElementById('s-nina').textContent     = stats.predicciones?.nina ?? 0;
+
+          // ── Tabla ──
+          if (!resultados.length) {
+            document.getElementById('tabla-contenido').innerHTML =
+              '<div class="estado"><div class="icono">🎯</div>Aún no hay participantes</div>';
+            return;
+          }
+
+          const filas = resultados.map((r, i) => {
+            const tipo = clasificarPrediccion(r.prediccion);
+            const clsPred = tipo === 'nino' ? 'pred-nino' : tipo === 'nina' ? 'pred-nina' : 'pred-otro';
+            const pct = r.porcentaje ?? Math.round((r.puntaje / r.maxPuntos) * 100);
+
+            return `
+              <tr>
+                <td class="td-nombre"><span class="medalla">${medalla(i)}</span> ${r.nombre}</td>
+                <td><span class="td-prediccion ${clsPred}">${r.prediccion || '–'}</span></td>
+                <td class="td-puntaje">${r.puntaje}<span style="font-size:0.75rem;color:#aaa;font-weight:500"> /${r.maxPuntos}</span>
+                  <span class="barra-mini"><span class="barra-mini-fill" style="width:${pct}%"></span></span>
+                </td>
+                <td class="col-stats" style="color:#6b7280;font-size:0.85rem">✅${r.correctas} ❌${r.incorrectas}</td>
+                <td class="td-fecha col-fecha">${formatearFecha(r.fecha)}</td>
+              </tr>`;
+          }).join('');
+
+          document.getElementById('tabla-contenido').innerHTML = `
+            <table>
+              <thead>
+                <tr>
+                  <th>Jugador</th>
+                  <th>Predicción</th>
+                  <th>Puntaje</th>
+                  <th class="col-stats">Respuestas</th>
+                  <th class="col-fecha">Hora</th>
+                </tr>
+              </thead>
+              <tbody>${filas}</tbody>
+            </table>`;
+        } catch (err) {
+          document.getElementById('tabla-contenido').innerHTML =
+            `<div class="estado"><div class="icono">🔌</div>No se pudo conectar al servidor.<br>Asegúrate de que <code>node server.js</code> esté corriendo.</div>`;
+          console.error(err);
+        }
+      }
+
+      // Cargar al iniciar y cada 30 segundos
+      cargarDatos();
+      setInterval(cargarDatos, 30000);
+    </script>
+  </body>
+</html>

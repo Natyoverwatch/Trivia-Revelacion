@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revelación Bebé Francisco & Erika 👶</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- ── PANTALLA INICIO ── -->
+    <div id="pantalla-inicio" class="pantalla activa">
+      <div class="card inicio-card">
+        <div class="inicio-heroes">🩷🍼🩵</div>
+        <h1>¿Niño o Niña?</h1>
+        <p class="inicio-sub">La revelación del bebé de Francisco & Erika</p>
+        <p class="inicio-desc">Demuestra cuánto sabes sobre la relación y el embarazo</p>
+        <div class="badge" id="badge-preguntas">— preguntas</div>
+        <div class="campo-nombre">
+          <label for="input-nombre">¿Cómo te llamas?</label>
+          <input
+            type="text"
+            id="input-nombre"
+            placeholder="Escribe tu nombre..."
+            maxlength="30"
+            autocomplete="off"
+          />
+          <span class="campo-error" id="nombre-error">Por favor ingresa tu nombre</span>
+        </div>
+        <div class="campo-nombre">
+          <label for="input-prediccion">¿Qué crees que es, niño o niña?</label>
+          <div class="prediccion-btns" id="prediccion-btns">
+            <button type="button" class="btn-pred" data-valor="Niño" onclick="seleccionarPrediccion(this)">
+              🩵 Niño
+            </button>
+            <button type="button" class="btn-pred" data-valor="Niña" onclick="seleccionarPrediccion(this)">
+              🩷 Niña
+            </button>
+          </div>
+          <span class="campo-error" id="prediccion-error">Por favor selecciona una opción</span>
+        </div>
+        <div class="reglas">
+          <p>😇 Respuesta correcta → <strong>2 puntos</strong></p>
+          <p>🥲 Respuesta incorrecta → <strong>1 punto</strong></p>
+          <p>🤫 No puedes volver a intentar una pregunta</p>
+        </div>
+        <button class="btn-iniciar" onclick="iniciarJuego()">¡Empezar! 🎉</button>
+      </div>
+    </div>
+
+    <!-- ── PANTALLA JUEGO ── -->
+    <div id="pantalla-juego" class="pantalla">
+      <div class="header-juego">
+        <span class="progreso-texto" id="texto-progreso">Pregunta 1 de 5</span>
+        <span class="puntaje-display">⭐ <span id="puntaje-actual">0</span> pts</span>
+      </div>
+      <div class="barra-progreso-wrap">
+        <div class="barra-progreso" id="barra-progreso" style="width: 0%"></div>
+      </div>
+      <div class="card tarjeta-pregunta">
+        <div class="num-pregunta" id="num-pregunta">Pregunta 1</div>
+        <div class="texto-pregunta" id="texto-pregunta"></div>
+      </div>
+      <div class="grid-opciones" id="grid-opciones"></div>
+    </div>
+
+    <!-- ── PANTALLA RESULTADOS ── -->
+    <div id="pantalla-resultado" class="pantalla">
+      <div class="card resultado-card">
+        <div class="resultado-emoji" id="resultado-emoji">🏆</div>
+        <h2 id="resultado-titulo">¡Excelente!</h2>
+        <p class="resultado-sub">
+          ¡Haz una captura de pantalla y compártela! 📸
+        </p>
+        <div class="puntos-grande" id="puntos-finales">0</div>
+        <div class="puntos-max" id="puntos-max">de 0 puntos posibles</div>
+        <div class="barra-resultado">
+          <div class="barra-resultado-fill" id="barra-resultado-fill" style="width: 0%"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box verde">
+            <div class="stat-num" id="stat-correctas">0</div>
+            <div class="stat-label">CORRECTAS</div>
+          </div>
+          <div class="stat-box rojo">
+            <div class="stat-num" id="stat-incorrectas">0</div>
+            <div class="stat-label">INCORRECTAS</div>
+          </div>
+        </div>
+        <div class="guardado-estado" id="guardado-estado"></div>
+        <button class="btn-revelacion" onclick="mostrarRevelacion()">
+          ¡Descubrir la revelación! 🎊
+        </button>
+      </div>
+    </div>
+
+    <!-- ── PANTALLA REVELACIÓN ── -->
+    <div id="pantalla-revelacion" class="pantalla">
+      <div class="card revelacion-card">
+        <p class="revelacion-anuncio">El bebé de Francisco & Erika es...</p>
+        <div class="revelacion-genero">¡ES NIÑO!</div>
+        <div class="revelacion-emojis">🩵👶🩵</div>
+        <p class="revelacion-mensaje">¡Bienvenido pequeño, ya te amamos mucho! 💙</p>
+      </div>
+    </div>
+
+    <!-- ── PANTALLA YA JUGASTE ── -->
+    <div id="pantalla-ya-jugaste" class="pantalla">
+      <div class="card ya-jugaste-card">
+        <div class="ya-jugaste-emoji">🙈</div>
+        <h2 id="ya-jugaste-titulo">¡Hola de nuevo!</h2>
+        <p class="ya-jugaste-sub">Ya completaste el quiz anteriormente</p>
+        <div class="ya-jugaste-score" id="ya-jugaste-score"></div>
+        <p class="ya-jugaste-nota">
+          Solo se puede participar una vez.<br />¡Espera el gran momento junto a todos!
+        </p>
+        <button class="btn-ver-revelacion" onclick="mostrarRevelacion()">
+          Ver la revelación 🩵
+        </button>
+      </div>
+    </div>
+
+    <!-- Overlay + Feedback flotante -->
+    <div class="overlay" id="overlay"></div>
+    <div class="feedback" id="feedback">
+      <div class="feedback-emoji" id="feedback-emoji"></div>
+      <div class="feedback-texto" id="feedback-texto"></div>
+      <div class="feedback-puntos" id="feedback-puntos"></div>
+    </div>
+
+    <script src="preguntas.js"></script>
+    <script>
+      const LETRAS       = ['A', 'B', 'C', 'D'];
+      const LS_KEY       = 'revelacion_pachito_v1';
+      const API_URL      = '/api/resultado';       // cambia si el servidor corre en otro puerto
+
+      let indice = 0, puntaje = 0, correctas = 0, incorrectas = 0, respondiendo = false;
+      let nombreJugador  = '';
+      let prediccionBebe = '';                     // 'Niño' | 'Niña'
+
+      // ── INIT ──────────────────────────────────────────────
+      window.addEventListener('DOMContentLoaded', () => {
+        const prev = localStorage.getItem(LS_KEY);
+        if (prev) {
+          mostrarYaJugaste(JSON.parse(prev));
+        } else {
+          mostrar('pantalla-inicio');
+        }
+
+        document.getElementById('badge-preguntas').textContent =
+          `${PREGUNTAS.length} pregunta${PREGUNTAS.length !== 1 ? 's' : ''}`;
+
+        // Enter en el campo de nombre arranca el juego
+        document.getElementById('input-nombre').addEventListener('keydown', e => {
+          if (e.key === 'Enter') iniciarJuego();
+        });
+      });
+
+      // ── SELECCIÓN PREDICCIÓN ────────────────────────────────
+      function seleccionarPrediccion(btn) {
+        document.querySelectorAll('.btn-pred').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        prediccionBebe = btn.dataset.valor;
+        document.getElementById('prediccion-error').classList.remove('visible');
+      }
+
+      // ── NAVEGACIÓN ─────────────────────────────────────────
+      function mostrar(id) {
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+        document.getElementById(id).classList.add('activa');
+      }
+
+      // ── INICIO ─────────────────────────────────────────────
+      function iniciarJuego() {
+        const nombre = document.getElementById('input-nombre').value.trim();
+        let valido = true;
+
+        if (!nombre) {
+          document.getElementById('nombre-error').classList.add('visible');
+          valido = false;
+        } else {
+          document.getElementById('nombre-error').classList.remove('visible');
+        }
+
+        if (!prediccionBebe) {
+          document.getElementById('prediccion-error').classList.add('visible');
+          valido = false;
+        }
+
+        if (!valido) return;
+
+        nombreJugador  = nombre;
+        indice = 0; puntaje = 0; correctas = 0; incorrectas = 0;
+        mostrar('pantalla-juego');
+        mostrarPregunta();
+      }
+
+      // ── PREGUNTA ───────────────────────────────────────────
+      function mostrarPregunta() {
+        respondiendo = false;
+        const q     = PREGUNTAS[indice];
+        const total = PREGUNTAS.length;
+
+        document.getElementById('texto-progreso').textContent = `Pregunta ${indice + 1} de ${total}`;
+        document.getElementById('puntaje-actual').textContent = puntaje;
+        document.getElementById('num-pregunta').textContent   = `Pregunta ${indice + 1}`;
+        document.getElementById('texto-pregunta').textContent = q.pregunta;
+        document.getElementById('barra-progreso').style.width = ((indice / total) * 100) + '%';
+
+        const grid = document.getElementById('grid-opciones');
+        grid.innerHTML = '';
+        q.opciones.forEach((op, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-opcion';
+          btn.innerHTML = `<span class="opcion-letra">${LETRAS[i]}</span><span>${op}</span>`;
+          btn.onclick = () => responder(i, btn);
+          grid.appendChild(btn);
+        });
+      }
+
+      // ── RESPUESTA ──────────────────────────────────────────
+      function responder(indiceOpcion, btnElegido) {
+        if (respondiendo) return;
+        respondiendo = true;
+
+        const q         = PREGUNTAS[indice];
+        const esCorrecta = indiceOpcion === q.correcta;
+        const puntos    = esCorrecta ? 2 : 1;
+        puntaje += puntos;
+        if (esCorrecta) correctas++; else incorrectas++;
+
+        document.querySelectorAll('.btn-opcion').forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.correcta) btn.classList.add('revelar-correcta');
+        });
+
+        btnElegido.classList.add(esCorrecta ? 'correcta' : 'incorrecta');
+        mostrarFeedback(esCorrecta, puntos);
+
+        setTimeout(() => {
+          ocultarFeedback();
+          indice++;
+          if (indice < PREGUNTAS.length) mostrarPregunta();
+          else mostrarResultados();
+        }, 1800);
+      }
+
+      // ── FEEDBACK ───────────────────────────────────────────
+      function mostrarFeedback(esCorrecta, puntos) {
+        document.getElementById('feedback-emoji').textContent = esCorrecta ? '🎉' : '😬';
+        document.getElementById('feedback-texto').textContent = esCorrecta ? '¡Correcto!' : '¡Incorrecto!';
+        document.getElementById('feedback-texto').style.color = esCorrecta ? '#16a34a' : '#db2777';
+        document.getElementById('feedback-puntos').textContent = `+${puntos} punto${puntos > 1 ? 's' : ''}`;
+        document.getElementById('overlay').classList.add('visible');
+        document.getElementById('feedback').classList.add('visible');
+      }
+
+      function ocultarFeedback() {
+        document.getElementById('overlay').classList.remove('visible');
+        document.getElementById('feedback').classList.remove('visible');
+      }
+
+      // ── RESULTADOS ─────────────────────────────────────────
+      function mostrarResultados() {
+        const maxPuntos = PREGUNTAS.length * 2;
+        const pct       = Math.round((puntaje / maxPuntos) * 100);
+
+        const niveles = [
+          { min: 100, emoji: '🏆', titulo: `¡Perfecto, ${nombreJugador}!`     },
+          { min: 80,  emoji: '🎉', titulo: `¡Excelente, ${nombreJugador}!`    },
+          { min: 60,  emoji: '😊', titulo: `¡Bien hecho, ${nombreJugador}!`   },
+          { min: 40,  emoji: '🤔', titulo: `Buen intento, ${nombreJugador}`   },
+          { min: 0,   emoji: '😅', titulo: `¡A estudiar, ${nombreJugador}!`   },
+        ];
+        const nivel = niveles.find(n => pct >= n.min);
+
+        document.getElementById('resultado-emoji').textContent  = nivel.emoji;
+        document.getElementById('resultado-titulo').textContent = nivel.titulo;
+        document.getElementById('puntos-finales').textContent   = puntaje;
+        document.getElementById('puntos-max').textContent       = `de ${maxPuntos} puntos posibles`;
+        document.getElementById('stat-correctas').textContent   = correctas;
+        document.getElementById('stat-incorrectas').textContent = incorrectas;
+
+        const datos = { nombre: nombreJugador, prediccion: prediccionBebe, puntaje, maxPuntos, correctas, incorrectas };
+
+        // 1. Guardar en localStorage (bloqueo re-participación, funciona sin servidor)
+        localStorage.setItem(LS_KEY, JSON.stringify(datos));
+
+        // 2. Guardar en MongoDB a través del servidor
+        guardarEnServidor(datos);
+
+        mostrar('pantalla-resultado');
+        setTimeout(() => {
+          document.getElementById('barra-resultado-fill').style.width = pct + '%';
+        }, 50);
+      }
+
+      // ── GUARDAR EN SERVIDOR ────────────────────────────────
+      async function guardarEnServidor(datos) {
+        const el = document.getElementById('guardado-estado');
+        el.textContent = '⏳ Guardando resultado...';
+        el.className   = 'guardado-estado guardando';
+
+        try {
+          const res = await fetch(API_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(datos),
+          });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+          el.textContent = '✅ Resultado guardado';
+          el.className   = 'guardado-estado guardado-ok';
+        } catch (err) {
+          // No interrumpir el flujo del juego — localStorage ya tiene los datos
+          el.textContent = '📵 Sin conexión al servidor (guardado local)';
+          el.className   = 'guardado-estado guardado-warn';
+          console.warn('No se pudo guardar en el servidor:', err.message);
+        }
+      }
+
+      // ── REVELACIÓN ─────────────────────────────────────────
+      function mostrarRevelacion() {
+        mostrar('pantalla-revelacion');
+        lanzarConfetti();
+      }
+
+      function lanzarConfetti() {
+        const colores = ['#f472b6', '#60a5fa', '#a78bfa', '#facc15', '#34d399', '#fb923c'];
+        for (let i = 0; i < 100; i++) {
+          const el   = document.createElement('div');
+          el.className = 'confetti-particle';
+          const size = 7 + Math.random() * 9;
+          el.style.cssText = `
+            left: ${Math.random() * 100}vw;
+            width: ${size}px; height: ${size}px;
+            background: ${colores[Math.floor(Math.random() * colores.length)]};
+            animation-duration: ${2.5 + Math.random() * 3}s;
+            animation-delay: ${Math.random() * 2}s;
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            transform: rotate(${Math.random() * 360}deg);
+          `;
+          document.body.appendChild(el);
+          el.addEventListener('animationend', () => el.remove());
+        }
+      }
+
+      // ── YA JUGASTE ─────────────────────────────────────────
+      function mostrarYaJugaste(data) {
+        document.getElementById('ya-jugaste-titulo').textContent =
+          `¡Hola de nuevo, ${data.nombre}!`;
+        document.getElementById('ya-jugaste-score').textContent =
+          `Tu puntaje: ${data.puntaje} / ${data.maxPuntos} pts  ·  ✅ ${data.correctas} correctas  ·  Predijiste: ${data.prediccion}`;
+        mostrar('pantalla-ya-jugaste');
+      }
+    </script>
+  </body>
+</html>
