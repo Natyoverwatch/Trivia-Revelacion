@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/api/resultado",  "destination": "/api/resultado"  },
-    { "source": "/api/resultados", "destination": "/api/resultados" },
-    { "source": "/api/stats",      "destination": "/api/stats"      }
+  "builds": [
+    { "src": "api/*.js",  "use": "@vercel/node"   },
+    { "src": "*.html",    "use": "@vercel/static"  },
+    { "src": "*.css",     "use": "@vercel/static"  },
+    { "src": "*.js",      "use": "@vercel/static"  }
+  ],
+  "routes": [
+    { "src": "/api/resultado",  "dest": "/api/resultado.js"  },
+    { "src": "/api/resultados", "dest": "/api/resultados.js" },
+    { "src": "/api/stats",      "dest": "/api/stats.js"      },
+    { "src": "/(.*)",           "dest": "/$1"                }
   ]
 }
